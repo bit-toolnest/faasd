@@ -1,21 +1,38 @@
 #!/bin/bash
 set -e
 
-echo "=== Dummy Uninstaller Script ==="
-echo "This script should remove all components installed by install.sh."
+echo "=== FAASD Server Uninstaller Script ==="
 
-# Example steps (replace with real commands):
-# 1. Stop services
-#    sudo systemctl stop tool.service
-#    sudo systemctl disable tool.service
+# 1) Stop faasd services
+echo "➡ Stopping faasd services..."
+sudo systemctl stop faasd || true
+sudo systemctl disable faasd || true
 
-# 2. Remove system packages
-#    sudo apt remove --purge -y <package>
+# 2) Remove faasd binary
+echo "➡ Removing faasd binary..."
+sudo rm -f /usr/local/bin/faasd || true
 
-# 3. Clean environment variables
-#    sudo sed -i '/TOOL_HOME=/d' /etc/environment
+# 3) Remove faasd configs
+echo "➡ Removing faasd configs..."
+sudo rm -rf /etc/faasd || true
 
-# 4. Delete files and directories
-#    sudo rm -rf /opt/tool
+# 4) Remove containerd + runc
+echo "➡ Removing containerd and runc..."
+sudo systemctl stop containerd || true
+sudo systemctl disable containerd || true
+sudo apt remove --purge containerd runc -y || true
 
-echo "✅ Uninstallation complete (dummy run)"
+# 5) Remove CNI plugins
+echo "➡ Removing CNI plugins..."
+sudo rm -rf /opt/cni/bin || true
+
+# 6) Cleanup containerd state
+echo "➡ Cleaning containerd state..."
+sudo rm -rf /var/lib/containerd || true
+
+# 7) Final apt cleanup
+echo "➡ Running apt cleanup..."
+sudo apt autoremove -y
+sudo apt clean
+
+echo "🎯 faasd server uninstall process finished!"
