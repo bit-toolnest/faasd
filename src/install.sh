@@ -31,7 +31,7 @@ sudo chmod +x /usr/local/bin/faasd
 # 6) Setup faasd systemd services
 echo "➡ Setting up faasd systemd services..."
 sudo mkdir -p /etc/faasd
-sudo faasd install
+sudo faasd install --systemd
 
 # 7) Enable and start faasd
 echo "➡ Starting faasd..."
